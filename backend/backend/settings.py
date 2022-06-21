@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'order',
+    'orders',
     'rest_framework',
     'corsheaders',
 ]
@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'oreders_db',
+        'NAME': 'orders_db',
         'USER': 'dull',
         'PASSWORD': 'dull',
         'HOST': 'db',
