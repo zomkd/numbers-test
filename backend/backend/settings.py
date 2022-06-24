@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure--l))308+c-py0+iq-wgry3j+z=b56+d3y_lo7zkijeet9wl=dx
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': 'orders_db',
         'USER': 'dull',
         'PASSWORD': 'dull',
-        'HOST': 'db',
+        'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }
