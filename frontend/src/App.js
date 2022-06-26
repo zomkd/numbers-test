@@ -122,13 +122,13 @@ class OrdersChart extends Component {
       ],
     };
   }
-  // componentDidMount() {
-  //   var  self  =  this;
-  //   ordersService.getOrders().then(function (result) {
-  //     console.log(result);
-  //     self.setState({ orders:  result.data})
-  //   });
-  // }
+  componentDidMount() {
+    var  self  =  this;
+    ordersService.getOrders().then(function (result) {
+      console.log(result);
+      self.setState({ orders:  result.data})
+    });
+  }
   render () {
     return (
       <LineChart
