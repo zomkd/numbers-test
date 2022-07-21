@@ -1,6 +1,7 @@
 __pycache__/
 .venv/ 
 .idea/
+.env.sh
 db.sqlite3
 migrations/
 .vscode/
