@@ -1,10 +1,11 @@
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Order(BaseModel):
-    num: int
-    order_num: int
-    dollar_price: int
-    ruble_price: int
-    delivery_time: datetime.time
+    num: int = Field(alias='№')
+    order_num: int = Field(alias='заказ №')
+    dollar_price: int = Field(alias='стоимость,$')
+    ruble_price: int = Field(alias='стоимость, руб')
+    delivery_time: datetime = Field(alias='срок поставки')
+    
