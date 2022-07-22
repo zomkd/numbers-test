@@ -1,4 +1,5 @@
 from datetime import datetime
+from operator import ne
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -43,7 +44,6 @@ def add_ruble_price_field(gs, ruble_exchange_rate) -> list:
 
 def save_data(gs_with_ruble_price_field: list):
     for row in gs_with_ruble_price_field:
-        # a = row.get('срок поставки').replace('.','-')
         date = datetime.strptime(row.get('срок поставки'), '%d.%m.%Y')
         date = date.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
         order = Order(num=row.get('№'), order_num=row.get('заказ №'), 
@@ -51,3 +51,21 @@ def save_data(gs_with_ruble_price_field: list):
                         delivery_time=date)
 
         order.save()
+
+# 'def get_changes_in_gs(old_data, new_data):
+
+#     return new_rows'
+
+def find_new_rows(old_data: list, new_data: list) -> list:
+    new_rows = []
+    if len(old_data) < len(new_data):
+        bigger = new_data
+        smaller = old_data
+    else:
+        bigger = old_data
+        smaller = new_data
+
+    for row in bigger:
+        if row not in smaller and len(smaller) !=0:
+            new_rows.append(row)
+    return new_rows
