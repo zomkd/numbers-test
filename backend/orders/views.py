@@ -15,6 +15,12 @@ from .models import Order
 env = environ.Env()
 environ.Env.read_env()
 
+ORDER_NUM_FIELD = 'Заказ №'
+NUM_FIELD = '№'
+DOLLAR_PRICE_FIELD = 'Стоимость, $'
+RUBLE_PRICE_FIELD = 'Стоимость, руб.'
+DELIVERY_TIME_FIELD = 'Срок поставки'
+
 @api_view(['GET'])
 def orders_list(request):
     if request.method == 'GET':
@@ -73,13 +79,12 @@ def get_deleted_rows(db_data: list, new_rows: list) -> list:
     return deleted_rows
 
 def collect_changes(db_data: list, new_rows: list, deleted_rows) -> list:
-    unique_field = 'Заказ №'
     updated_rows = []
     deleted = []
     added_rows = new_rows[:]
     for new_row in new_rows:
         for db_row in db_data:
-            if new_row.get(unique_field) == db_row.get(unique_field):
+            if new_row.get(ORDER_NUM_FIELD) == db_row.get(ORDER_NUM_FIELD):
                 updated_rows.append(new_row)
                 added_rows.remove(new_row)
     
@@ -87,10 +92,22 @@ def collect_changes(db_data: list, new_rows: list, deleted_rows) -> list:
     return {'added_rows':added_rows, 'updated_rows':updated_rows, 'deleted_rows':deleted}
 
 def clean_up_deleted_rows(updated_rows, old_deleted_rows:list):
-    unique_field = 'Заказ №'
     deleted_rows = old_deleted_rows[:]
     for updated_row in updated_rows:
         for deleted_row in old_deleted_rows:
-            if deleted_row[unique_field] == updated_row[unique_field]:
+            if deleted_row[ORDER_NUM_FIELD] == updated_row[ORDER_NUM_FIELD]:
                 deleted_rows.remove(deleted_row)
     return deleted_rows
+
+def delete_rows_from_db(changes):
+    for deleted_data in changes.get('deleted_rows'):
+        Order.objects.filter(order_num=deleted_data.get(ORDER_NUM_FIELD)).delete()
+
+def update_rows_from_db(changes):
+    for updated_data in changes.get('updated_rows'):
+        Order.objects.filter(order_num=updated_data.get(ORDER_NUM_FIELD)).update(dollar_price=updated_data.get(DOLLAR_PRICE_FIELD),
+        ruble_price=updated_data.get(RUBLE_PRICE_FIELD),delivery_time=updated_data.get(DELIVERY_TIME_FIELD))
+def added_rows_from_db(changes):
+    for added_rows in changes.get('added_rows'):
+        Order.objects.create(num=added_rows.get(NUM_FIELD), order_num=added_rows.get(ORDER_NUM_FIELD), dollar_price=added_rows.get(DOLLAR_PRICE_FIELD),
+                             ruble_price=added_rows.get(RUBLE_PRICE_FIELD), delivery_time=added_rows.get(DELIVERY_TIME_FIELD))
