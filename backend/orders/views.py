@@ -1,5 +1,4 @@
 from datetime import datetime
-from operator import ne
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -52,9 +51,15 @@ def save_data(gs_with_ruble_price_field: list):
 
         order.save()
 
-# 'def get_changes_in_gs(old_data, new_data):
+def get_changes_in_gs(old_data, new_data):
+    new_rows = find_new_rows(old_data, new_data)
+    deleted_rows = check_dublicates(new_rows, old_data) #нужно написать условия для удаления из бд строк
+    added_or_updated_rows = check_dublicates(new_rows, new_data) 
 
-#     return new_rows'
+    updated_rows = check_updated_rows(added_or_updated_rows, old_data)
+    added_rows = check_added_rows(updated_rows,new_rows)
+    
+    return new_rows
 
 def find_new_rows(old_data: list, new_data: list) -> list:
     new_rows = []
@@ -69,3 +74,18 @@ def find_new_rows(old_data: list, new_data: list) -> list:
         if row not in smaller and len(smaller) !=0:
             new_rows.append(row)
     return new_rows
+
+def check_dublicates(new_rows, old_rows) -> bool:
+    return [new_row for new_row in new_rows if new_row in old_rows]
+
+def check_updated_rows(added_or_updated_rows, old_rows):
+    unique_field = 'Заказ №'
+    updated_rows = []
+    for added_or_updated_row in added_or_updated_rows:
+        for old_row in old_rows:
+            if added_or_updated_row.get(unique_field) == old_row.get(unique_field):
+                updated_rows.append(added_or_updated_row)
+    return updated_rows
+
+def check_added_rows(updated_rows: list, new_rows: list) -> list:
+    return [new_row for new_row in new_rows if new_row not in updated_rows]
