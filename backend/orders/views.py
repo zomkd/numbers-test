@@ -23,7 +23,6 @@ def orders_list(request):
         ruble_exchange_rate = get_ruble_exchange_rate(ET.fromstring(resp.content))
         gs = wk1.get_all_records()  
         gs_with_ruble_price_field = add_ruble_price_field(gs, ruble_exchange_rate)  
-        # orders = Order.parse_raw(gs_with_ruble_price_field)
         save_data(gs_with_ruble_price_field)
         return Response({'data': gs})
 
@@ -51,41 +50,47 @@ def save_data(gs_with_ruble_price_field: list):
 
         order.save()
 
-def get_changes_in_gs(old_data, new_data):
-    new_rows = find_new_rows(old_data, new_data)
-    deleted_rows = check_dublicates(new_rows, old_data) #нужно написать условия для удаления из бд строк
-    added_or_updated_rows = check_dublicates(new_rows, new_data) 
+def get_changes_in_gs(db_data: list, new_rows: list) -> list:
+    changes = {}
+    if has_new_rows:
+        deleted_rows = get_deleted_rows(db_data, new_rows)
+        changes = collect_changes(db_data, new_rows, deleted_rows)
+    return changes
 
-    updated_rows = check_updated_rows(added_or_updated_rows, old_data)
-    added_rows = check_added_rows(updated_rows,new_rows)
-    
-    return new_rows
+def has_new_rows(db_data: list, new_rows: list) -> bool:
+    for new_row in new_rows:
+        if new_row not in db_data:
+            return True
+    return False
 
-def find_new_rows(old_data: list, new_data: list) -> list:
-    new_rows = []
-    if len(old_data) < len(new_data):
-        bigger = new_data
-        smaller = old_data
-    else:
-        bigger = old_data
-        smaller = new_data
+def get_deleted_rows(db_data: list, new_rows: list) -> list:
+    deleted_rows = []
+    for db_row in db_data:
+        if db_row in new_rows:
+            new_rows.remove(db_row)
+        else:
+            deleted_rows.append(db_row)
+    return deleted_rows
 
-    for row in bigger:
-        if row not in smaller and len(smaller) !=0:
-            new_rows.append(row)
-    return new_rows
-
-def check_dublicates(new_rows, old_rows) -> bool:
-    return [new_row for new_row in new_rows if new_row in old_rows]
-
-def check_updated_rows(added_or_updated_rows, old_rows):
+def collect_changes(db_data: list, new_rows: list, deleted_rows) -> list:
     unique_field = 'Заказ №'
     updated_rows = []
-    for added_or_updated_row in added_or_updated_rows:
-        for old_row in old_rows:
-            if added_or_updated_row.get(unique_field) == old_row.get(unique_field):
-                updated_rows.append(added_or_updated_row)
-    return updated_rows
+    deleted = []
+    added_rows = new_rows[:]
+    for new_row in new_rows:
+        for db_row in db_data:
+            if new_row.get(unique_field) == db_row.get(unique_field):
+                updated_rows.append(new_row)
+                added_rows.remove(new_row)
+    
+    deleted = clean_up_deleted_rows(updated_rows, deleted_rows)
+    return {'added_rows':added_rows, 'updated_rows':updated_rows, 'deleted_rows':deleted}
 
-def check_added_rows(updated_rows: list, new_rows: list) -> list:
-    return [new_row for new_row in new_rows if new_row not in updated_rows]
+def clean_up_deleted_rows(updated_rows, old_deleted_rows:list):
+    unique_field = 'Заказ №'
+    deleted_rows = old_deleted_rows[:]
+    for updated_row in updated_rows:
+        for deleted_row in old_deleted_rows:
+            if deleted_row[unique_field] == updated_row[unique_field]:
+                deleted_rows.remove(deleted_row)
+    return deleted_rows
