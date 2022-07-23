@@ -1,8 +1,6 @@
 """Fixtures for tests"""
 import pytest
-from orders.views import (find_new_rows, 
-                            check_dublicates,
-                            check_updated_rows,)
+from orders.views import find_new_rows, check_dublicates,check_updated_rows, check_added_rows
 
 
 @pytest.fixture
@@ -65,3 +63,15 @@ def supply_data_check_updated_rows_1():
     data_1 = [{'Заказ №':1,'b':4},{'Заказ №':2,'b':1},{'Заказ №':3,'b':6}]
     data_2 = [{'Заказ №':1,'b':2},{'Заказ №':5,'b':1},{'Заказ №':6,'b':4}]
     return check_updated_rows(data_1, data_2)
+
+@pytest.fixture
+def supply_data_check_updated_rows_2():
+    data_1 = [{'Заказ №':1,'b':4},{'Заказ №':5,'b':4},{'Заказ №':3,'b':6}]
+    data_2 = [{'Заказ №':1,'b':2},{'Заказ №':5,'b':1},{'Заказ №':6,'b':4}]
+    return check_updated_rows(data_1, data_2)
+
+@pytest.fixture
+def supply_data_check_added_rows_1():
+    data_1 = [{'Заказ №':1,'b':4},{'Заказ №':5,'b':4}]
+    data_2 = [{'Заказ №':1,'b':4},{'Заказ №':5,'b':4},{'Заказ №':6,'b':4}]
+    return check_added_rows(data_1, data_2)

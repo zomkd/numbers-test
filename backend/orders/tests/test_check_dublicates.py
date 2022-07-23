@@ -6,3 +6,4 @@ def test_check_dublicates_2(supply_data_check_dublicates_2):
 
 def test_check_dublicates_3(supply_data_check_dublicates_3):
     assert [{'a':2,'b':1}] == supply_data_check_dublicates_3
+    
