@@ -1,6 +1,7 @@
 from datetime import datetime
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.forms.models import model_to_dict
 
 import pygsheets
 import environ
@@ -15,11 +16,11 @@ from .models import Order
 env = environ.Env()
 environ.Env.read_env()
 
-ORDER_NUM_FIELD = 'Заказ №'
+ORDER_NUM_FIELD = 'заказ №'
 NUM_FIELD = '№'
-DOLLAR_PRICE_FIELD = 'Стоимость, $'
-RUBLE_PRICE_FIELD = 'Стоимость, руб.'
-DELIVERY_TIME_FIELD = 'Срок поставки'
+DOLLAR_PRICE_FIELD = 'стоимость,$'
+RUBLE_PRICE_FIELD = 'стоимость, руб'
+DELIVERY_TIME_FIELD = 'срок поставки'
 
 @api_view(['GET'])
 def orders_list(request):
@@ -30,6 +31,16 @@ def orders_list(request):
         gs = wk1.get_all_records()  
         gs_with_ruble_price_field = add_ruble_price_field(gs, ruble_exchange_rate)  
         save_data(gs_with_ruble_price_field)
+        while True:
+            # db_data = Order.objects.values('num','order_num','dollar_price','ruble_price','delivery_time')
+            db_data = gs_with_ruble_price_field
+            gs_new = wk1.get_all_records()  
+            gs_with_ruble_price_field = add_ruble_price_field(gs_new, ruble_exchange_rate)
+            changes = get_changes_in_gs(db_data, gs_with_ruble_price_field[:])
+            delete_rows_from_db(changes)
+            add_rows_from_db(changes)
+            update_rows_from_db(changes)
+            sleep(10)
         return Response({'data': gs})
 
 def auth_to_gs():
@@ -53,7 +64,6 @@ def save_data(gs_with_ruble_price_field: list):
         order = Order(num=row.get('№'), order_num=row.get('заказ №'), 
                         dollar_price=row.get('стоимость,$'), ruble_price=row.get('стоимость, руб'), 
                         delivery_time=date)
-
         order.save()
 
 def get_changes_in_gs(db_data: list, new_rows: list) -> list:
@@ -101,13 +111,27 @@ def clean_up_deleted_rows(updated_rows, old_deleted_rows:list):
 
 def delete_rows_from_db(changes):
     for deleted_data in changes.get('deleted_rows'):
-        Order.objects.filter(order_num=deleted_data.get(ORDER_NUM_FIELD)).delete()
+        deleted_field = deleted_data.get(ORDER_NUM_FIELD)
+        Order.objects.filter(order_num=deleted_field).delete()
 
 def update_rows_from_db(changes):
     for updated_data in changes.get('updated_rows'):
+        date = datetime.strptime(updated_data.get('срок поставки'), '%d.%m.%Y')
+        date = date.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
         Order.objects.filter(order_num=updated_data.get(ORDER_NUM_FIELD)).update(dollar_price=updated_data.get(DOLLAR_PRICE_FIELD),
-        ruble_price=updated_data.get(RUBLE_PRICE_FIELD),delivery_time=updated_data.get(DELIVERY_TIME_FIELD))
-def added_rows_from_db(changes):
+        ruble_price=updated_data.get(RUBLE_PRICE_FIELD),delivery_time=date)
+
+def add_rows_from_db(changes):
     for added_rows in changes.get('added_rows'):
+        date = datetime.strptime(added_rows.get('срок поставки'), '%d.%m.%Y')
+        date = date.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
         Order.objects.create(num=added_rows.get(NUM_FIELD), order_num=added_rows.get(ORDER_NUM_FIELD), dollar_price=added_rows.get(DOLLAR_PRICE_FIELD),
-                             ruble_price=added_rows.get(RUBLE_PRICE_FIELD), delivery_time=added_rows.get(DELIVERY_TIME_FIELD))
+                             ruble_price=added_rows.get(RUBLE_PRICE_FIELD), delivery_time=date)
+
+def db_obj_to_dict(db_objs):
+    db_dict = []
+    for db_obj in list(db_objs):
+        db_data = model_to_dict(db_obj)
+        db_data['delivery_time'] = db_data.get('delivery_time').strftime('%d.%m.%Y')
+        db_dict.append(db_data)
+    return db_dict
