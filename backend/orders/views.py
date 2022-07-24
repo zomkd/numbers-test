@@ -40,7 +40,7 @@ def orders_list(request):
             delete_rows_from_db(changes)
             add_rows_from_db(changes)
             update_rows_from_db(changes)
-            sleep(10)
+    
         return Response({'data': gs})
 
 def auth_to_gs():
