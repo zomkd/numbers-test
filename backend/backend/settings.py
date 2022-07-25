@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'orders',
     'rest_framework',
     'corsheaders',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -139,3 +140,10 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 
 CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
 CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+
+CELERY_BEAT_SCHEDULE = {
+    "gs_watching_task": {
+        "task": "orders.tasks.get_gs_data",
+        "schedule": 20.0,
+    },
+}
