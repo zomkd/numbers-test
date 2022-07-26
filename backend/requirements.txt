@@ -10,3 +10,4 @@ pytest-django
 celery==5.1.2
 Redis=4.3.4
 django-celery-beat
+channels

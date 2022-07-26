@@ -15,9 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, re_path
-from orders import views
+
 
 urlpatterns = [
     re_path('admin/', admin.site.urls),
-    re_path(r'^api/orders/$', views.orders_list),
+    re_path('api/', include('orders.urls')),
 ]
