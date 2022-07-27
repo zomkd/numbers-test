@@ -23,14 +23,16 @@ DELIVERY_TIME_FIELD = 'срок поставки'
 
 def watching_gs():
     gs_with_ruble_price_field = []
+    wk1 = auth_to_gs()
     if Order.objects.count() == 0:
-        wk1 = auth_to_gs()
+
         resp = requests.get('https://www.cbr.ru/scripts/XML_daily.asp')
         ruble_exchange_rate = get_ruble_exchange_rate(ET.fromstring(resp.content))
         gs = wk1.get_all_records()  
         gs_with_ruble_price_field = add_ruble_price_field(gs, ruble_exchange_rate)  
         save_data(gs_with_ruble_price_field)
     else:
+
         db_data = gs_with_ruble_price_field
         gs_new = wk1.get_all_records()  
         gs_with_ruble_price_field = add_ruble_price_field(gs_new, ruble_exchange_rate)
