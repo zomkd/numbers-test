@@ -47,6 +47,9 @@ class OrdersChart extends Component {
     }
     this.client.onmessage = (gs_data) => {
       const dataFromSever = JSON.parse(gs_data.data);
+      console.log(
+        'asdasd'
+      )
       if (dataFromSever) {
         console.log(dataFromSever)
         this.setState({orders: dataFromSever})
