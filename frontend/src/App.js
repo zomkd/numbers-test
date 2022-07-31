@@ -21,20 +21,28 @@ class OrdersChart extends Component {
     this.state  = {
       orders: [
         {
-          delivery_time: "12.06.2022",
-          order_num: 121231123,
-          dollar_price: 3,
-          ruble_price: 150,
-          general_price: 64444,
-          total: 4,
+          'срок поставки': "12.06.2022",
+          'заказ №': 121231123,
+          'стоимость,$': 3,
+          'стоимость, руб': 150,
+          'общая цена': 64444,
+          'общее': 4,
         },
         {
-          delivery_time: "14.06.2022",
-          order_num: 121123,
-          dollar_price: 23,
-          ruble_price: 1250,
-          general_price: 44444,
-          total: 14,
+          'срок поставки': "14.06.2022",
+          'заказ №': 121123,
+          'стоимость,$': 23,
+          'стоимость, руб': 1250,
+          'общая цена': 44444,
+          'общее': 14,
+        },
+        {
+          'срок поставки': "16.06.2022",
+          'заказ №': 121123,
+          'стоимость,$': 23,
+          'стоимость, руб': 1250,
+          'общая цена': 44444,
+          'общее': 14,
         }
       ],
     };
@@ -74,13 +82,13 @@ class OrdersChart extends Component {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="delivery_time" />
+        <XAxis dataKey="срок поставки" />
         <YAxis />
         <Tooltip />
         <Legend />
         <Line
           type="monotone"
-          dataKey="general_price"
+          dataKey="общая цена"
           stroke="#8884d8"
           activeDot={{ r: 2 }}
         />

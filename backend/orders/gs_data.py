@@ -38,7 +38,9 @@ def watching_gs():
         delete_rows_from_db(changes)
         add_rows_from_db(changes)
         update_rows_from_db(changes)
-    return gs_with_ruble_price_field
+    total_price = count_each_day_total_price(gs_with_ruble_price_field)
+    orders = {'data': gs_with_ruble_price_field, 'total': total_price}
+    return orders
 
 
 def auth_to_gs():
@@ -148,3 +150,12 @@ def extract_db_data():
         order[DELIVERY_TIME_FIELD] = db_order.get('delivery_time').strftime('%d.%m.%Y')
         orders.append(order)
     return orders
+
+def count_each_day_total_price(orders: list):
+    total_price = {}
+    for order in orders:
+        if order[DELIVERY_TIME_FIELD] not in total_price:
+            total_price[order[DELIVERY_TIME_FIELD]] = order[DOLLAR_PRICE_FIELD]
+        else:
+            total_price[order[DELIVERY_TIME_FIELD]] += order[DOLLAR_PRICE_FIELD]
+    return total_price
