@@ -31,7 +31,7 @@ def watching_gs():
         gs_with_ruble_price_field = add_ruble_price_field(gs, ruble_exchange_rate)  
         save_data(gs_with_ruble_price_field)
     else:
-        db_data = gs_with_ruble_price_field
+        db_data = extract_db_data()
         gs_new = wk1.get_all_records()  
         gs_with_ruble_price_field = add_ruble_price_field(gs_new, ruble_exchange_rate)
         changes = get_changes_in_gs(db_data, gs_with_ruble_price_field[:])
@@ -58,6 +58,7 @@ def add_ruble_price_field(gs, ruble_exchange_rate) -> list:
 def change_date_format(data: dict):
     date = datetime.strptime(data.get('срок поставки'), '%d.%m.%Y')
     return date.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
+
 def save_data(gs_with_ruble_price_field: list):
     for row in gs_with_ruble_price_field:
         date = change_date_format(row)
@@ -133,3 +134,17 @@ def db_obj_to_dict(db_objs):
         db_data['delivery_time'] = db_data.get('delivery_time').strftime('%d.%m.%Y')
         db_dict.append(db_data)
     return db_dict
+
+def extract_db_data():
+    db_orders = list(Order.objects.all())
+    orders = []
+    for db_order in db_orders:
+        order = {}
+        db_order = model_to_dict(db_order)
+        order[NUM_FIELD] = db_order.get('num') 
+        order[ORDER_NUM_FIELD] = db_order.get('order_num') 
+        order[DOLLAR_PRICE_FIELD] = db_order.get('dollar_price')
+        order[RUBLE_PRICE_FIELD] = db_order.get('ruble_price') 
+        order[DELIVERY_TIME_FIELD] = db_order.get('delivery_time').strftime('%d.%m.%Y')
+        orders.append(order)
+    return orders

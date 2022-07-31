@@ -39,7 +39,7 @@ class OrdersChart extends Component {
       ],
     };
   }
-  client = new W3CWebSocket('ws://127.0.0.1:8000/ws/orders/list/')
+  client = new W3CWebSocket('ws://127.0.0.1:8000/ws/orders/')
   componentDidMount() {
     var  self  =  this;
     this.client.onopen = () => {

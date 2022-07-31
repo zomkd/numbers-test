@@ -9,4 +9,4 @@ class Order(models.Model):
     delivery_time = models.DateTimeField(verbose_name='Срок поставки')
 
     def __str__(self):
-        return self.order_num
+        return str(self.order_num)
