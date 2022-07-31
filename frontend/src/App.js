@@ -60,7 +60,7 @@ class OrdersChart extends Component {
       )
       if (dataFromSever) {
         console.log(dataFromSever)
-        this.setState({orders: dataFromSever})
+        this.setState({orders: dataFromSever.total})
       }
     }
     // ordersService.getOrders().then(function (result) {

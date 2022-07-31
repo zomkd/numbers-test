@@ -39,7 +39,8 @@ def watching_gs():
         add_rows_from_db(changes)
         update_rows_from_db(changes)
     total_price = count_each_day_total_price(gs_with_ruble_price_field)
-    orders = {'data': gs_with_ruble_price_field, 'total': total_price}
+    total_prices_list = get_total_prices_list(total_price)
+    orders = {'data': gs_with_ruble_price_field, 'total': total_prices_list}
     return orders
 
 
@@ -152,10 +153,19 @@ def extract_db_data():
     return orders
 
 def count_each_day_total_price(orders: list):
-    total_price = {}
+    total_prices = {}
     for order in orders:
-        if order[DELIVERY_TIME_FIELD] not in total_price:
-            total_price[order[DELIVERY_TIME_FIELD]] = order[DOLLAR_PRICE_FIELD]
+        if order[DELIVERY_TIME_FIELD] not in total_prices:
+            total_prices[order[DELIVERY_TIME_FIELD]] = order[DOLLAR_PRICE_FIELD]
         else:
-            total_price[order[DELIVERY_TIME_FIELD]] += order[DOLLAR_PRICE_FIELD]
-    return total_price
+            total_prices[order[DELIVERY_TIME_FIELD]] += order[DOLLAR_PRICE_FIELD]
+    return total_prices
+
+def get_total_prices_list(total_prices:dict):
+    total_prices_list = []
+    for date, total in total_prices.items():
+        total_price = {}
+        total_price[DELIVERY_TIME_FIELD] = date
+        total_price['общая цена'] = total
+        total_prices_list.append(total_price)
+    return total_prices_list
