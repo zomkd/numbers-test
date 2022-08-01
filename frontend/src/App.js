@@ -1,7 +1,7 @@
-import  React, { Component } from  'react'; 
+import React, { Component } from 'react';
 
-import  OrdersService  from  './OrdersService';
-import {w3cwebsocket as W3CWebSocket} from 'websocket';
+import { Container, Row, Col } from "reactstrap";
+import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import "./index.css";
 import {
   LineChart,
@@ -12,13 +12,18 @@ import {
   Tooltip,
   Legend
 } from "recharts";
+import numeral from "numeral";
+import Chart from "./Chart.js";
 
-const  ordersService  =  new  OrdersService();
+const numberFormatter = (item) => numeral(item).format("0,0");
 
+const renderSingleValue = (resultSet, key) => (
+  <h1 height={300}>{numberFormatter(resultSet.chartPivot()[0][key])}</h1>
+);
 class OrdersChart extends Component {
   constructor(props) {
     super(props);
-    this.state  = {
+    this.state = {
       orders: [
         {
           'срок поставки': "12.06.2022",
@@ -49,7 +54,6 @@ class OrdersChart extends Component {
   }
   client = new W3CWebSocket('ws://127.0.0.1:8000/ws/orders/')
   componentDidMount() {
-    var  self  =  this;
     this.client.onopen = () => {
       console.log('websucket')
     }
@@ -60,7 +64,7 @@ class OrdersChart extends Component {
       )
       if (dataFromSever) {
         console.log(dataFromSever)
-        this.setState({orders: dataFromSever.total})
+        this.setState({ orders: dataFromSever.total })
       }
     }
     // ordersService.getOrders().then(function (result) {
@@ -68,32 +72,46 @@ class OrdersChart extends Component {
     //   self.setState({ orders:  result.data})
     // });
   }
-  render () {
+  render() {
     return (
-      <LineChart
-        width={500}
-        height={300}
-        data={this.state.orders}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="срок поставки" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Line
-          type="monotone"
-          dataKey="общая цена"
-          stroke="#8884d8"
-          activeDot={{ r: 2 }}
-        />
-        <Line type="monotone" dataKey="total" stroke="#82ca9d" />
-      </LineChart>
+      <Container>
+        <Row>
+          <Col sm="4">
+            <Chart
+              title="Total Users"
+              query={{ measures: [123] }}
+              render={(resultSet) =>
+                renderSingleValue(resultSet, 342)
+              }
+            />
+          </Col>
+        </Row>
+
+        <LineChart
+          width={500}
+          height={300}
+          data={this.state.orders}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="срок поставки" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="общая цена"
+            stroke="#8884d8"
+            activeDot={{ r: 2 }}
+          />
+          <Line type="monotone" dataKey="total" stroke="#82ca9d" />
+        </LineChart>
+      </Container>
     );
   }
 }
