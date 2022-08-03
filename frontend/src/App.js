@@ -14,6 +14,7 @@ import {
 } from "recharts";
 
 import Chart from "./Chart.js";
+import Table from "./Table.js";
 
 
 class OrdersChart extends Component {
@@ -21,8 +22,11 @@ class OrdersChart extends Component {
     super(props);
     this.state = {
       orders: [],
+      theadData: ["№", "заказ №", "стоимость,$","срок поставки","стоимость, руб"],
+      data: [],
       total: [
         {
+          "№":1,
           'срок поставки': "12.06.2022",
           'заказ №': 121231123,
           'стоимость,$': 3,
@@ -31,6 +35,7 @@ class OrdersChart extends Component {
           'общее': 4,
         },
         {
+          "№":2,
           'срок поставки': "14.06.2022",
           'заказ №': 121123,
           'стоимость,$': 23,
@@ -39,6 +44,7 @@ class OrdersChart extends Component {
           'общее': 14,
         },
         {
+          "№":3,
           'срок поставки': "16.06.2022",
           'заказ №': 121123,
           'стоимость,$': 23,
@@ -58,7 +64,7 @@ class OrdersChart extends Component {
       const dataFromSever = JSON.parse(gs_data.data);
       if (dataFromSever) {
         console.log(dataFromSever)
-        this.setState({ total: dataFromSever.total, orders: dataFromSever.data })
+        this.setState({data:dataFromSever, total: dataFromSever.total, orders: dataFromSever.data })
       }
     }
   }
@@ -71,6 +77,12 @@ class OrdersChart extends Component {
               orders={this.state.orders}
             />
           </Col>
+        </Row>
+        <Row>
+        <Table
+        theadData={this.state.theadData}
+        tbodyData={this.state.orders}
+        />
         </Row>
 
         <LineChart
