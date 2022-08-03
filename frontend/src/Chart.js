@@ -1,25 +1,23 @@
-import React from "react";
+import { React } from "react";
 import { Card, CardTitle, CardBody, CardText } from "reactstrap";
-import { QueryRenderer } from "@cubejs-client/react";
 
-const Chart = ({ title, query, render }) => (
-  <Card>
+
+export default function Chart({orders}) {
+  let total = 0;
+  for (let i = 0; i < orders.length; ++i){
+    total += orders[i]['стоимость,$']
+  }
+  return (<Card
+  className="my-2"
+  color="primary"
+    style={{
+      width: '18rem'
+    }}>
     <CardBody>
-      <CardTitle tag="h5">{title}</CardTitle>
+      <CardTitle tag="h5"> Total </CardTitle>
       <CardText>
-        <QueryRenderer
-          query={query}
-          render={({ resultSet }) => {
-            if (!resultSet) {
-              return <div className="loader" />;
-            }
-
-            return render(resultSet);
-          }}
-        />
+        {total}
       </CardText>
     </CardBody>
-  </Card>
-);
-
-export default Chart;
+  </Card>);
+};

@@ -12,19 +12,16 @@ import {
   Tooltip,
   Legend
 } from "recharts";
-import numeral from "numeral";
+
 import Chart from "./Chart.js";
 
-const numberFormatter = (item) => numeral(item).format("0,0");
 
-const renderSingleValue = (resultSet, key) => (
-  <h1 height={300}>{numberFormatter(resultSet.chartPivot()[0][key])}</h1>
-);
 class OrdersChart extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      orders: [
+      orders: [],
+      total: [
         {
           'срок поставки': "12.06.2022",
           'заказ №': 121231123,
@@ -59,18 +56,11 @@ class OrdersChart extends Component {
     }
     this.client.onmessage = (gs_data) => {
       const dataFromSever = JSON.parse(gs_data.data);
-      console.log(
-        'asdasd'
-      )
       if (dataFromSever) {
         console.log(dataFromSever)
-        this.setState({ orders: dataFromSever.total })
+        this.setState({ total: dataFromSever.total, orders: dataFromSever.data })
       }
     }
-    // ordersService.getOrders().then(function (result) {
-    //   console.log(result);
-    //   self.setState({ orders:  result.data})
-    // });
   }
   render() {
     return (
@@ -78,11 +68,7 @@ class OrdersChart extends Component {
         <Row>
           <Col sm="4">
             <Chart
-              title="Total Users"
-              query={{ measures: [123] }}
-              render={(resultSet) =>
-                renderSingleValue(resultSet, 342)
-              }
+              orders={this.state.orders}
             />
           </Col>
         </Row>
@@ -90,7 +76,7 @@ class OrdersChart extends Component {
         <LineChart
           width={500}
           height={300}
-          data={this.state.orders}
+          data={this.state.total}
           margin={{
             top: 5,
             right: 30,
