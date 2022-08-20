@@ -93,6 +93,7 @@ def has_new_rows(db_data: list, new_rows: list) -> bool:
 
 
 def get_deleted_rows(db_data: list, new_rows: list) -> list:
+    '''get delted rows'''
     deleted_rows = []
     for db_row in db_data:
         if db_row in new_rows:
@@ -102,7 +103,8 @@ def get_deleted_rows(db_data: list, new_rows: list) -> list:
     return deleted_rows
 
 
-def aggregate_changes(db_data: list, new_rows: list, deleted_rows) -> list:
+def aggregate_changes(db_data: list, new_rows: list, deleted_rows) -> dict:
+    '''aggregate new deleted and updated rows from GS in dict'''
     updated_rows = []
     deleted = []
     added_rows = new_rows[:]
@@ -111,7 +113,7 @@ def aggregate_changes(db_data: list, new_rows: list, deleted_rows) -> list:
             if new_row.get(ORDER_NUM_FIELD) == db_row.get(ORDER_NUM_FIELD) and new_row != db_row:
                 updated_rows.append(new_row)
                 added_rows.remove(new_row)
-            if  new_row == db_row:
+            if new_row == db_row:  # if (old) {b:1} == {b:1} (new)
                 added_rows.remove(new_row)
 
     deleted = remove_updated_rows_from_deleted_rows(updated_rows, deleted_rows)
