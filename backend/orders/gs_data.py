@@ -30,6 +30,7 @@ def get_orders() -> list:
     else:
         changes = get_changes_in_gs(db_data, gs_with_ruble_price_field[:])
         apply_changes(changes)
+
     total_price_with_each_day = count_each_day_total_price(
         gs_with_ruble_price_field)
     total_prices_list = get_total_prices_list(total_price_with_each_day)
@@ -39,12 +40,12 @@ def get_orders() -> list:
 
 def apply_changes(changes: list):
     """choose what changes have occurred"""
+    if len(changes.get('delete_rows', [])) != 0:
+        delete_rows_from_db(changes)
     if len(changes.get('added_rows', [])) != 0:
         add_rows_from_db(changes)
     if len(changes.get('update_rows', [])) != 0:
         update_rows_from_db(changes)
-    if len(changes.get('delete_rows', [])) != 0:
-        delete_rows_from_db(changes)
 
 
 def get_ruble_exchange_rate():
@@ -53,8 +54,8 @@ def get_ruble_exchange_rate():
     ruble_id = 'R01235'
     response = requests.get(url)
     exchange_rates = ET.fromstring(response.content)
-    ruble_exchange_rate = [exchange_rate[4].text for exchange_rate in exchange_rates \
-                            if exchange_rate.attrib.get('ID', '') == ruble_id][0]
+    ruble_exchange_rate = [exchange_rate[4].text for exchange_rate in exchange_rates
+                           if exchange_rate.attrib.get('ID', '') == ruble_id][0]
     return float(ruble_exchange_rate.replace(',', '.'))
 
 
@@ -74,17 +75,20 @@ def add_ruble_price_field(gs, ruble_exchange_rate) -> list:
 
 def get_changes_in_gs(db_data: list, new_rows: list) -> list:
     """get online changes from gs"""
-    changes = {}
-    if has_new_rows:
-        deleted_rows = get_deleted_rows(db_data, new_rows)
+    changes = {'added_rows': [], 'deleted_rows': [],
+               'updated_rows': []}
+    if has_new_rows(db_data, new_rows):
+        deleted_rows = get_deleted_rows(db_data, new_rows[:])
         changes = aggregate_changes(db_data, new_rows, deleted_rows)
     return changes
 
 
 def has_new_rows(db_data: list, new_rows: list) -> bool:
     for new_row in new_rows:
-        if new_row not in db_data:
+        if new_row not in db_data or len(db_data) > len(new_rows):
             return True
+        else:
+            continue
     return False
 
 
@@ -104,8 +108,10 @@ def aggregate_changes(db_data: list, new_rows: list, deleted_rows) -> list:
     added_rows = new_rows[:]
     for new_row in new_rows:
         for db_row in db_data:
-            if new_row.get(ORDER_NUM_FIELD) == db_row.get(ORDER_NUM_FIELD):
+            if new_row.get(ORDER_NUM_FIELD) == db_row.get(ORDER_NUM_FIELD) and new_row != db_row:
                 updated_rows.append(new_row)
+                added_rows.remove(new_row)
+            if  new_row == db_row:
                 added_rows.remove(new_row)
 
     deleted = remove_updated_rows_from_deleted_rows(updated_rows, deleted_rows)
