@@ -2,6 +2,8 @@ from django.db import models
 
 
 class Order(models.Model):
+    """Orders model"""
+
     num = models.PositiveIntegerField(verbose_name='№')
     order_num = models.PositiveIntegerField(verbose_name='Заказ №')
     dollar_price = models.PositiveIntegerField(verbose_name='Стоимость, $')
