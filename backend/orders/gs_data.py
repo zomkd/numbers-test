@@ -1,8 +1,10 @@
 """get and handling with data from gs """
+import os
 import xml.etree.ElementTree as ET
 import pygsheets
-import environ
 import requests
+
+from dotenv import load_dotenv
 
 from django.forms.models import model_to_dict
 
@@ -11,8 +13,7 @@ from .models import Order
 from .db_data_manipulate import *
 
 
-env = environ.Env()
-environ.Env.read_env()
+load_dotenv()
 
 
 def get_orders() -> list:
@@ -62,7 +63,7 @@ def get_ruble_exchange_rate():
 def auth_to_gs():
     """auth to gs"""
     gs = pygsheets.authorize(service_file='./service_account_credentials.json')
-    sh = gs.open_by_key(env('GS_KEY'))
+    sh = gs.open_by_key(os.environ.get('GS_KEY'))
     return sh[0]
 
 

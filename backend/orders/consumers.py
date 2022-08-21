@@ -11,7 +11,6 @@ class OrderConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_add)(
             "orders", self.channel_name
         )
-
         self.accept()
 
     def disconnect(self):
