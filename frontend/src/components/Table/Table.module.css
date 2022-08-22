@@ -1,0 +1,11 @@
+.table {
+    border-collapse: collapse;
+    border: none;
+    width: 100%;
+}
+
+.tableRowHeader {
+    background-color: transparent;
+    transition: all 0.25s ease;
+    border-radius: 10px;
+}

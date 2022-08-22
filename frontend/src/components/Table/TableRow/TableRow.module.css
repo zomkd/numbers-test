@@ -1,0 +1,13 @@
+.tableRowItems {
+    cursor: auto;
+}
+
+.tableRowItems:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.tableCell {
+    padding: 12px;
+    font-size: 14px;
+    color: grey;
+}

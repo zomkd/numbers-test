@@ -14,8 +14,8 @@ import {
 } from "recharts";
 
 import Chart from "./Chart.js";
-import Table from "./Table.js";
-
+// import Table from "./Table.js";
+import Table from "./components/Table";
 
 class OrdersChart extends Component {
   constructor(props) {
@@ -31,8 +31,8 @@ class OrdersChart extends Component {
           'заказ №': 121231123,
           'стоимость,$': 3,
           'стоимость, руб': 150,
-          'общая цена': 64444,
-          'общее': 4,
+          // 'общая цена': 64444,
+          // 'общее': 4,
         },
         {
           "№":2,
@@ -40,8 +40,8 @@ class OrdersChart extends Component {
           'заказ №': 121123,
           'стоимость,$': 23,
           'стоимость, руб': 1250,
-          'общая цена': 44444,
-          'общее': 14,
+          // 'общая цена': 44444,
+          // 'общее': 14,
         },
         {
           "№":3,
@@ -49,8 +49,8 @@ class OrdersChart extends Component {
           'заказ №': 121123,
           'стоимость,$': 23,
           'стоимость, руб': 1250,
-          'общая цена': 44444,
-          'общее': 14,
+          // 'общая цена': 44444,
+          // 'общее': 14,
         }
       ],
     };
@@ -81,7 +81,8 @@ class OrdersChart extends Component {
         <Row>
         <Table
         theadData={this.state.theadData}
-        tbodyData={this.state.orders}
+        data={this.state.total}
+        rowsPerPage={2}
         />
         </Row>
 
