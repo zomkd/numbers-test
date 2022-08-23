@@ -13,8 +13,7 @@ import {
   Legend
 } from "recharts";
 
-import Chart from "./Chart.js";
-// import Table from "./Table.js";
+import Chart from "./components/Chart";
 import Table from "./components/Table";
 
 class OrdersChart extends Component {
