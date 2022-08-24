@@ -2,14 +2,14 @@ import { React } from "react";
 import { Card, CardTitle, CardBody, CardText } from "reactstrap";
 
 
-export default function Chart({orders}) {
+const Chart = ({ orders }) => {
   let total = 0;
-  for (let i = 0; i < orders.length; ++i){
+  for (let i = 0; i < orders.length; ++i) {
     total += orders[i]['стоимость,$']
   }
   return (<Card
-  className="my-2"
-  color="primary"
+    className="my-2"
+    color="primary"
     style={{
       width: '18rem'
     }}>
@@ -21,3 +21,5 @@ export default function Chart({orders}) {
     </CardBody>
   </Card>);
 };
+
+export default Chart
