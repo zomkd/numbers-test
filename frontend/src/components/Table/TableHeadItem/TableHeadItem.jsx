@@ -3,7 +3,7 @@ import styles from "./TableHeadItem.module.css";
 
 export default function TableHeadItem({ item }){
     return (
-        <td className={styles.tableHeader} title={item}>
+        <td data-testid="head-item-table" className={styles.tableHeader} title={item}>
             {item}
         </td>
     );

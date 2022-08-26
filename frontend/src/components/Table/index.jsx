@@ -12,23 +12,23 @@ const Table = ({ data, theadData, rowsPerPage }) => {
   const { slice, range } = useTable(data, page, rowsPerPage)
 
   return (
-    <>    
-    <table className={styles.table}>
-      <thead className={styles.tableRowHeader}>
-        <tr>
-          {theadData.map((h) => {
-            return <TableHeadItem key={h} item={h} />;
+    <div data-testid="orders-table">
+      <table className={styles.table}>
+        <thead className={styles.tableRowHeader}>
+          <tr>
+            {theadData.map((h) => {
+              return <TableHeadItem key={h} item={h} />;
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {slice.map((el) => {
+            return <TableRow key={el} data={el} />;
           })}
-        </tr>
-      </thead>
-      <tbody>
-        {slice.map((el) => {
-          return <TableRow key={el} data={el} />;
-        })}
-      </tbody>
-    </table>
-    <TableFooter range={range} slice={slice} setPage={setPage} page={page} />
-    </>
+        </tbody>
+      </table>
+      <TableFooter range={range} slice={slice} setPage={setPage} page={page} />
+    </div>
 
   )
 };
