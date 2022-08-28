@@ -80,7 +80,7 @@ class OrdersChart extends Component {
         <Row>
         <Table
         theadData={this.state.theadData}
-        data={this.state.total}
+        data={this.state.data}
         rowsPerPage={2}
         />
         </Row>

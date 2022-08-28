@@ -23,12 +23,12 @@ const Table = ({ data, theadData, rowsPerPage }) => {
         </thead>
         <tbody>
           {slice.map((el) => {
-            return <TableRow key={el} data={el} />;
+            return <TableRow key={el['№']} data={el} />;
           })}
         </tbody>
       </table>
       <TableFooter range={range} slice={slice} setPage={setPage} page={page} />
-    </div>
+  </div>
 
   )
 };

@@ -1,10 +1,12 @@
-import { render, screen } from '@testing-library/react'
-import Table from '../Table'
+import { renderHook, render, screen } from '@testing-library/react';
+import useTable from "../../hooks/useTable";
+import TableFooter from '../Table/TableFooter'
 
 
-test('table test', () => {
-    const theadData = ["№", "заказ №", "стоимость,$", "срок поставки", "стоимость, руб"]
-    const total = [
+test('table footer test', () => {
+    const page = 1
+    const setPage = 1
+    const data = [
         {
             "№": 1,
             'срок поставки': "12.06.2022",
@@ -28,11 +30,14 @@ test('table test', () => {
         }
     ]
     const rowsPerPage = 2
-    render(<Table
-        theadData={theadData}
-        data={total}
-        rowsPerPage={rowsPerPage}
+    const { result } = renderHook(() => useTable(data, page, rowsPerPage))
+
+    render(<TableFooter
+        slice={result.current.slice}
+        page={page}
+        setPage={setPage}
+        range={result.current.range}
     />)
-    const orderTableElement = screen.getByTestId('orders-table')
-    expect(orderTableElement).toBeInTheDocument;
+    const orderTableFooter = screen.getByTestId('table-footer')
+    expect(orderTableFooter).toBeInTheDocument;
 }) 

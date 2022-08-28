@@ -1,10 +1,10 @@
-import { render, screen } from '@testing-library/react'
-import Table from '../Table'
+import { renderHook } from '@testing-library/react';
+import useTable from "../../hooks/useTable";
 
 
-test('table test', () => {
-    const theadData = ["№", "заказ №", "стоимость,$", "срок поставки", "стоимость, руб"]
-    const total = [
+test('useTable hook test', () => {
+    const page = 1
+    const data = [
         {
             "№": 1,
             'срок поставки': "12.06.2022",
@@ -28,11 +28,7 @@ test('table test', () => {
         }
     ]
     const rowsPerPage = 2
-    render(<Table
-        theadData={theadData}
-        data={total}
-        rowsPerPage={rowsPerPage}
-    />)
-    const orderTableElement = screen.getByTestId('orders-table')
-    expect(orderTableElement).toBeInTheDocument;
-}) 
+    const { result } = renderHook(() => useTable(data, page, rowsPerPage))
+
+    expect(result.current.range).toStrictEqual([1, 2])
+})
