@@ -18,4 +18,7 @@ docker-compose up --build -d
 ```
 cd numbers-test/backend
 pylint
+
+cd numbers-test/frontend
+npm test
 ```
