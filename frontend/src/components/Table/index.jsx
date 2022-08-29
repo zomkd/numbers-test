@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import useTable from "../../hooks/useTable";
 import styles from "./Table.module.css";
 import TableFooter from "./TableFooter";
-import TableHeadItem from "./TableHeadItem/TableHeadItem";
-import TableRow from "./TableRow/TableRow";
+import TableHeadItem from "./TableHeadItem";
+import TableRow from "./TableRow";
 
 
 const Table = ({ data, theadData, rowsPerPage }) => {
